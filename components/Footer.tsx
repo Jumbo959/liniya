@@ -22,7 +22,9 @@ export function Footer({ phone, email, address }: { phone: string; email: string
         <div>
           <p><Link href="/progress">Ход строительства</Link></p>
           <p><Link href="/contacts">Записаться</Link></p>
-          <p><Link href="/admin">Вход для офиса</Link></p>
+          {process.env.NEXT_PUBLIC_BASE_PATH ? null : (
+            <p><Link href="/admin">Вход для офиса</Link></p>
+          )}
         </div>
       </div>
       <div className="wrap">
