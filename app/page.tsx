@@ -86,7 +86,7 @@ export default function HomePage() {
       <section className="section wrap">
         <div className="section-head">
           <h2>Как снять</h2>
-          <p className="section-note">Четыре шага. Без банка, взноса и договора долевого участия.</p>
+          <p className="section-note">Четыре шага: от выбора квартиры до ключей.</p>
         </div>
         <div className="steps">
           {RENT_STEPS.map((step) => (
