@@ -5,7 +5,7 @@ export default function NotFound() {
     <div className="wrap page-hero">
       <p className="kicker">404</p>
       <h1>Такой квартиры нет.</h1>
-      <p className="lede">Номер могли снять с продажи или он никогда не существовал.</p>
+      <p className="lede">Такой квартиры нет. Проверьте номер или откройте список свободных.</p>
       <Link className="btn" href="/catalog">Вернуться в наличие</Link>
     </div>
   );

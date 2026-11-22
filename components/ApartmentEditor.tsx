@@ -108,9 +108,9 @@ export function ApartmentEditor({ apartment }: { apartment: Apartment | null }) 
           <label className="field">
             <span>Статус</span>
             <select value={draft.status} onChange={(e) => patch("status", e.target.value as ApartmentDraft["status"])}>
-              <option value="available">в продаже</option>
-              <option value="reserved">бронь</option>
-              <option value="sold">продана</option>
+              <option value="available">свободна</option>
+              <option value="reserved">на просмотре</option>
+              <option value="sold">занята</option>
             </select>
           </label>
           <label className="field">

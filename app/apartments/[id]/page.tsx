@@ -5,7 +5,7 @@ import { BookingForm } from "@/components/BookingForm";
 import { MortgageCalc } from "@/components/MortgageCalc";
 import { SaveButtons } from "@/components/SaveButtons";
 import { StatusMark } from "@/components/StatusMark";
-import { formatArea, formatDate, formatPerM, formatPrice, roomsLong } from "@/lib/format";
+import { formatArea, formatDate, formatRent, roomsLong } from "@/lib/format";
 import { kitchenArea, livingArea } from "@/lib/areas";
 import { getApartment, getPublicApartments, toPublic } from "@/lib/store";
 
@@ -39,15 +39,15 @@ export default async function ApartmentPage({ params }: { params: Promise<{ id: 
       <aside className="side-card">
         <StatusMark status={apartment.status} />
         <h1>№ {apartment.id}</h1>
-        <p className="price-lg">{apartment.status === "sold" ? "Продана" : formatPrice(apartment.price)}</p>
+        <p className="price-lg">{apartment.status === "sold" ? "Занята" : formatRent(apartment.price)}</p>
         <p className="meta-line">
           <span>{roomsLong(apartment.rooms)}</span>
           <span>{formatArea(apartment.area)}</span>
           <span>{apartment.floor} этаж из 9</span>
-          <span>{apartment.status === "sold" ? "" : formatPerM(apartment.price, apartment.area)}</span>
+          <span>с мебелью</span>
         </p>
         {apartment.reservedUntil && apartment.status === "reserved" && (
-          <p>Бронь до {formatDate(apartment.reservedUntil)}. Можно встать в лист ожидания.</p>
+          <p>Смотрят до {formatDate(apartment.reservedUntil)}. Можно встать в лист ожидания.</p>
         )}
         <p className="blurb">{apartment.blurb}</p>
         <ul className="feature-list">

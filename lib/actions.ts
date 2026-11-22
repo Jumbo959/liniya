@@ -197,7 +197,7 @@ export async function createLead(input: {
       return;
     }
     if (input.type === "booking" && apartment?.status === "sold") {
-      result = { ok: false, error: "Эта квартира продана. Можно встать в лист ожидания." };
+      result = { ok: false, error: "Эта квартира занята. Можно встать в лист ожидания." };
       return;
     }
     let type = input.type;
@@ -215,7 +215,7 @@ export async function createLead(input: {
       apartment.reservedUntil = until.toISOString();
       apartment.updatedAt = now;
       const when = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long" }).format(until);
-      note = `Квартира ${apartment.id} забронирована до ${when}. Цена зафиксирована, депозит ${db.settings.bookingDeposit.toLocaleString("ru-RU")} ₽.`;
+      note = `Квартиру ${apartment.id} держим до ${when}. Залог при договоре — ${apartment.price.toLocaleString("ru-RU")} ₽, это один месяц.`;
       db.events.unshift({ at: now, text: `${name} забронировал ${apartment.id} до ${when}.` });
     }
     db.leads.unshift({

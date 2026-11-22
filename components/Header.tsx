@@ -7,8 +7,8 @@ import { usePrefs } from "./Prefs";
 
 const LINKS = [
   { href: "/catalog", label: "Квартиры" },
-  { href: "/purchase", label: "Покупка" },
-  { href: "/progress", label: "Ход работ" },
+  { href: "/purchase", label: "Условия" },
+  { href: "/progress", label: "Дом" },
   { href: "/contacts", label: "Контакты" },
 ];
 
@@ -24,7 +24,7 @@ export function Header({ phone }: { phone: string }) {
       <div className="header-inner">
         <Link href="/" className="brand" onClick={() => setOpen(false)}>
           <b>ЛИНИЯ</b>
-          <span>дом · 40 квартир</span>
+          <span>аренда · 40 квартир</span>
         </Link>
         <nav className={open ? "nav open" : "nav"} aria-label="Разделы">
           {LINKS.map((link) => (

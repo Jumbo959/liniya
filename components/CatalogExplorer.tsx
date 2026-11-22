@@ -5,8 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Chessboard } from "./Chessboard";
 import { FloorPlan } from "./FloorPlan";
 import { StatusMark } from "./StatusMark";
-import { formatArea, formatPerM, formatPrice, roomsLong, roomsShort } from "@/lib/format";
-import type { Finishing, PublicApartment } from "@/lib/types";
+import { formatArea, formatRent, roomsLong, roomsShort } from "@/lib/format";
+import type { PublicApartment } from "@/lib/types";
 
 type Initial = {
   rooms?: string;
@@ -35,7 +35,6 @@ export function CatalogExplorer({ apartments, initial }: { apartments: PublicApa
   const [priceMin, setPriceMin] = useState(initial.priceMin || "");
   const [priceMax, setPriceMax] = useState(initial.priceMax || "");
   const [q, setQ] = useState(initial.q || "");
-  const [finish, setFinish] = useState<string[]>(initial.finish ? initial.finish.split(",") : []);
   const [hideSold, setHideSold] = useState(initial.status === "hide-sold");
   const [sort, setSort] = useState(initial.sort || "price-asc");
   const [mode, setMode] = useState(initial.mode || "cards");
@@ -49,7 +48,6 @@ export function CatalogExplorer({ apartments, initial }: { apartments: PublicApa
     if (read("priceMin")) setPriceMin(read("priceMin"));
     if (read("priceMax")) setPriceMax(read("priceMax"));
     if (read("q")) setQ(read("q"));
-    if (read("finish")) setFinish(read("finish").split(","));
     if (read("status") === "hide-sold") setHideSold(true);
     if (read("sort")) setSort(read("sort"));
     if (read("mode")) setMode(read("mode"));
@@ -60,9 +58,8 @@ export function CatalogExplorer({ apartments, initial }: { apartments: PublicApa
       if (rooms.length && !rooms.includes(String(item.rooms))) return false;
       if (floorMin && item.floor < Number(floorMin)) return false;
       if (floorMax && item.floor > Number(floorMax)) return false;
-      if (priceMin && item.price < Number(priceMin) * 1_000_000) return false;
-      if (priceMax && item.price > Number(priceMax) * 1_000_000) return false;
-      if (finish.length && !finish.includes(item.finishing)) return false;
+      if (priceMin && item.price < Number(priceMin) * 1000) return false;
+      if (priceMax && item.price > Number(priceMax) * 1000) return false;
       if (hideSold && item.status === "sold") return false;
       if (q && !`${item.id} ${item.title} ${item.view}`.toLowerCase().includes(q.toLowerCase())) return false;
       return true;
@@ -75,7 +72,7 @@ export function CatalogExplorer({ apartments, initial }: { apartments: PublicApa
       return a.price - b.price;
     });
     return sorted;
-  }, [apartments, rooms, floorMin, floorMax, priceMin, priceMax, finish, hideSold, q, sort]);
+  }, [apartments, rooms, floorMin, floorMax, priceMin, priceMax, hideSold, q, sort]);
 
   function toggle(list: string[], value: string, set: (next: string[]) => void) {
     set(list.includes(value) ? list.filter((item) => item !== value) : [...list, value]);
@@ -84,8 +81,8 @@ export function CatalogExplorer({ apartments, initial }: { apartments: PublicApa
   return (
     <div className="wrap-wide catalog">
       <aside className="filters">
-        <h1>Наличие</h1>
-        <p className="muted">Сорок квартир, один подъезд. Шахматка не врёт: серые проданы, кирпичные в брони.</p>
+        <h1>Квартиры</h1>
+        <p className="muted">Цена — аренда в месяц. Серые уже заняты, зелёная рамка значит, что квартиру смотрят.</p>
         <label className="field">
           <span>Номер или вид</span>
           <input value={q} onChange={(event) => setQ(event.target.value)} placeholder="504, торец" />
@@ -108,25 +105,15 @@ export function CatalogExplorer({ apartments, initial }: { apartments: PublicApa
           </div>
         </div>
         <div className="field">
-          <span>Цена, млн ₽</span>
+          <span>В месяц, тыс. ₽</span>
           <div className="pair">
             <input inputMode="decimal" placeholder="от" value={priceMin} onChange={(event) => setPriceMin(event.target.value)} />
             <input inputMode="decimal" placeholder="до" value={priceMax} onChange={(event) => setPriceMax(event.target.value)} />
           </div>
         </div>
-        <div className="field">
-          <span>Отделка</span>
-          <div className="chips">
-            {(["без отделки", "white box", "чистовая"] as Finishing[]).map((item) => (
-              <button key={item} type="button" className={finish.includes(item) ? "on" : ""} onClick={() => toggle(finish, item, setFinish)}>
-                {item}
-              </button>
-            ))}
-          </div>
-        </div>
         <label className="check-row">
           <input type="checkbox" checked={hideSold} onChange={(event) => setHideSold(event.target.checked)} />
-          Скрыть проданные
+          Скрыть занятые
         </label>
       </aside>
       <div>
@@ -143,8 +130,8 @@ export function CatalogExplorer({ apartments, initial }: { apartments: PublicApa
               </button>
             ))}
             <select className="input" value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Сортировка">
-              <option value="price-asc">Сначала дешевле</option>
-              <option value="price-desc">Сначала дороже</option>
+              <option value="price-asc">Сначала дешевле в месяц</option>
+              <option value="price-desc">Сначала дороже в месяц</option>
               <option value="area-desc">По площади</option>
               <option value="floor-asc">По этажу</option>
             </select>
@@ -155,7 +142,7 @@ export function CatalogExplorer({ apartments, initial }: { apartments: PublicApa
             <table>
               <thead>
                 <tr>
-                  <th>№</th><th>Комнаты</th><th>Этаж</th><th>Площадь</th><th>Отделка</th><th>Вид</th><th>Цена</th><th>Статус</th>
+                  <th>№</th><th>Комнаты</th><th>Этаж</th><th>Площадь</th><th>Вид</th><th>В месяц</th><th>Статус</th>
                 </tr>
               </thead>
               <tbody>
@@ -165,9 +152,8 @@ export function CatalogExplorer({ apartments, initial }: { apartments: PublicApa
                     <td>{roomsShort(item.rooms)}</td>
                     <td>{item.floor}</td>
                     <td>{formatArea(item.area)}</td>
-                    <td>{item.finishing}</td>
                     <td>{item.view}</td>
-                    <td>{item.status === "sold" ? "—" : formatPrice(item.price)}</td>
+                    <td>{item.status === "sold" ? "—" : formatRent(item.price)}</td>
                     <td><StatusMark status={item.status} /></td>
                   </tr>
                 ))}
@@ -187,11 +173,11 @@ export function CatalogExplorer({ apartments, initial }: { apartments: PublicApa
                     <StatusMark status={item.status} />
                   </div>
                   <h3>{roomsLong(item.rooms)}</h3>
-                  <p className="muted">{item.floor} этаж · {item.view} · {item.finishing}</p>
+                  <p className="muted">{item.floor} этаж · {item.view}</p>
                   <p className="price">
-                    <b>{item.status === "sold" ? "Продана" : formatPrice(item.price)}</b>
+                    <b>{item.status === "sold" ? "Занята" : formatRent(item.price)}</b>
                     <br />
-                    <span className="muted">{formatArea(item.area)} · {item.status === "sold" ? "цена закрыта" : formatPerM(item.price, item.area)}</span>
+                    <span className="muted">{formatArea(item.area)} · с мебелью</span>
                   </p>
                 </div>
               </article>

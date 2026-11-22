@@ -63,18 +63,17 @@ const TYPES: Record<
   },
 };
 
-const BASE_PER_M: Record<number, number> = { 0: 620000, 1: 575000, 2: 540000, 3: 510000 };
+const RENT_PER_M: Record<number, number> = { 0: 3100, 1: 2950, 2: 2750, 3: 2600 };
 
-function priceFor(area: number, rooms: number, floor: number, view: string, finishing: Finishing) {
-  const viewK = view.includes("переулок") ? 1.12 : view.includes("углов") ? 1.08 : view.includes("торец") ? 1.05 : 1;
-  const finishK = finishing === "чистовая" ? 1.07 : finishing === "white box" ? 1.03 : 1;
-  const floorK = 1 + (floor - 2) * 0.02;
-  const raw = area * (BASE_PER_M[rooms] ?? 540000) * viewK * finishK * floorK;
-  return Math.round(raw / 50000) * 50000;
+function priceFor(area: number, rooms: number, floor: number, view: string) {
+  const viewK = view.includes("переулок") ? 1.1 : view.includes("углов") ? 1.06 : view.includes("торец") ? 1.04 : 1;
+  const floorK = 1 + (floor - 2) * 0.012;
+  const raw = area * (RENT_PER_M[rooms] ?? 2800) * viewK * floorK;
+  return Math.round(raw / 1000) * 1000;
 }
 
-function featuresFor(planType: PlanType, view: string, finishing: Finishing) {
-  const features = ["балкон", finishing];
+function featuresFor(planType: PlanType, view: string) {
+  const features = ["мебель и техника", "балкон"];
   if (planType === "two-wide" || planType === "three") features.unshift("два санузла");
   if (planType === "three") features.unshift("мастер-спальня", "гардеробная", "кабинет");
   if (planType === "two") features.unshift("гардеробная", "отдельная кухня");
@@ -106,7 +105,7 @@ function makeApartment(floor: number, position: number): Apartment {
     title: spec.title,
     area,
     ceiling,
-    price: priceFor(area, spec.rooms, floor, spec.view, spec.finishing),
+    price: priceFor(area, spec.rooms, floor, spec.view),
     status,
     reservedUntil: status === "reserved" ? (RESERVED_UNTIL[id] ?? "2026-11-28T18:00:00.000Z") : null,
     view: spec.view,
@@ -114,8 +113,8 @@ function makeApartment(floor: number, position: number): Apartment {
     windowSides: spec.windowSides,
     planType: spec.planType,
     plan,
-    features: featuresFor(spec.planType, spec.view, spec.finishing),
-    blurb: PLAN_BLURB[spec.planType] + floorSentence(floor),
+    features: featuresFor(spec.planType, spec.view),
+    blurb: PLAN_BLURB[spec.planType] + floorSentence(floor) + " Сдаётся надолго, с мебелью и техникой.",
     photoUrls: [],
     internalNote: "",
     createdAt: NOW,
@@ -136,14 +135,14 @@ export function createSeed(): Database {
       developer: "ООО «Линия Девелопмент»",
       phone: "+74951204040",
       phoneDisplay: "+7 495 120-40-40",
-      email: "sales@liniya.demo",
+      email: "hello@liniya.demo",
       city: "Москва",
       district: "Даниловский район",
       address: "улица Ленточная, дом 8",
       siteUrl: "",
       newDevelopmentId: "",
-      bookingDeposit: 100000,
-      bookingDays: 5,
+      bookingDeposit: 0,
+      bookingDays: 3,
       exportReserved: true,
       exportSold: false,
       latitude: "",
@@ -159,10 +158,10 @@ export function createSeed(): Database {
         email: "m.sokolova@mail.ru",
         type: "booking",
         apartmentId: "203",
-        message: "Хотим зафиксировать 203 до выходных. Ипотека семейная, двое детей.",
+        message: "Хотим посмотреть 203 в субботу. Двое, с собакой среднего размера.",
         time: "будни, 17–20",
         status: "reserved",
-        managerNote: "Паспорт запрошен, бронь до 25 ноября.",
+        managerNote: "Просмотр до 25 ноября, собака согласована.",
       },
       {
         id: "L-1002",
@@ -170,9 +169,9 @@ export function createSeed(): Database {
         name: "Игорь Левин",
         phone: "+7 903 221-09-14",
         email: "",
-        type: "mortgage",
+        type: "consult",
         apartmentId: "505",
-        message: "Считает стандартную ставку и рассрочку. Первый взнос около 40%.",
+        message: "Спрашивает, входит ли интернет и можно ли с ноября на год.",
         time: "будни, 13–17",
         status: "meeting",
         managerNote: "Встреча в шоуруме 21 ноября, 12:00.",
@@ -198,7 +197,7 @@ export function createSeed(): Database {
         email: "",
         type: "waitlist",
         apartmentId: "202",
-        message: "Хотел 202, она продана. Предложили 204 и 302.",
+        message: "Хотел 202, она занята. Предложили 204 и 302.",
         time: "будни, 10–13",
         status: "lost",
         managerNote: "Ушёл думать, не перезванивать до декабря.",
@@ -211,10 +210,10 @@ export function createSeed(): Database {
         email: "orlov.k@yandex.ru",
         type: "booking",
         apartmentId: "703",
-        message: "Бронь с рассрочкой 50/50. Ждёт проект договора.",
+        message: "Хочет заехать в декабре на год. Ждёт договор аренды.",
         time: "будни, 13–17",
         status: "reserved",
-        managerNote: "Юрист готовит ДДУ.",
+        managerNote: "Договор на год, залог — месяц.",
       },
     ],
     feedLog: [

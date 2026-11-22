@@ -11,8 +11,8 @@ import { readDb } from "@/lib/store";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Линия — дом на сорок квартир", template: "%s — Линия" },
-  description: "ЖК «Линия» в Даниловском районе: 40 квартир, чертёж и объём каждой, бронь, ипотека и выгрузка в кабинеты площадок.",
+  title: { default: "Линия — аренда квартир", template: "%s — Линия" },
+  description: "Долгосрочная аренда в доме «Линия»: 40 квартир с мебелью, план и 3D, без комиссии.",
 };
 
 export const viewport = {

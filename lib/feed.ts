@@ -14,7 +14,7 @@ function description(apartment: Apartment, settings: Settings) {
     `${roomsLong(apartment.rooms)} ${apartment.area.toLocaleString("ru-RU")} м², ${apartment.floor} этаж из 9.`,
     `ЖК «${settings.complexName}», ${settings.address}. Вид: ${apartment.view}. Отделка: ${apartment.finishing}. Потолки ${apartment.ceiling.toLocaleString("ru-RU")} м.`,
     apartment.blurb,
-    "Продажа от застройщика, ДДУ, расчёты через эскроу. Ключи — II квартал 2027.",
+    "Долгосрочная аренда с мебелью и техникой. Залог — один месяц, комиссии нет.",
   ].join(" ");
 }
 
@@ -31,7 +31,7 @@ export function yandexFeed(apartments: Apartment[], settings: Settings, site: st
           ? `<latitude>${xmlEscape(settings.latitude)}</latitude><longitude>${xmlEscape(settings.longitude)}</longitude>`
           : "";
       return `<offer internal-id="${xmlEscape(apartment.id)}">
-        <type>продажа</type>
+        <type>аренда</type>
         <property-type>жилая</property-type>
         <category>квартира</category>
         <url>${xmlEscape(`${site}/apartments/${apartment.id}`)}</url>
@@ -45,11 +45,11 @@ export function yandexFeed(apartments: Apartment[], settings: Settings, site: st
           <apartment>${xmlEscape(apartment.id)}</apartment>
           ${coords}
         </location>
-        <price><value>${apartment.price}</value><currency>RUR</currency></price>
+        <price><value>${apartment.price}</value><currency>RUR</currency><period>месяц</period></price>
         <sales-agent>
           <name>${xmlEscape(settings.salesName)}</name>
           <phone>${xmlEscape(settings.phoneDisplay)}</phone>
-          <category>застройщик</category>
+          <category>агентство</category>
           <organization>${xmlEscape(settings.developer)}</organization>
           <email>${xmlEscape(settings.email)}</email>
         </sales-agent>
@@ -61,8 +61,7 @@ export function yandexFeed(apartments: Apartment[], settings: Settings, site: st
         <building-state>unfinished</building-state>
         <rooms>${rooms}</rooms>
         ${apartment.rooms <= 0 ? "<studio>1</studio>" : ""}
-        <new-flat>1</new-flat>
-        <deal-status>первичная продажа</deal-status>
+        <rent-pledge>1</rent-pledge>
         <area><value>${apartment.area}</value><unit>кв. м</unit></area>
         <description>${xmlEscape(description(apartment, settings))}</description>
         ${images.map((url) => `<image>${xmlEscape(url)}</image>`).join("")}
@@ -88,8 +87,8 @@ export function avitoFeed(apartments: Apartment[], settings: Settings, site: str
       return `<Ad>
         <Id>${xmlEscape(apartment.id)}</Id>
         <Category>Квартиры</Category>
-        <OperationType>Продам</OperationType>
-        <MarketType>Новостройка</MarketType>
+        <OperationType>Сдам</OperationType>
+        <LeaseType>На длительный срок</LeaseType>
         ${dev}
         <Status>Квартира</Status>
         <HouseType>Кирпичный</HouseType>
@@ -119,7 +118,7 @@ export function feedWarnings(apartments: Apartment[], settings: Settings) {
   const warnings: string[] = [];
   const list = exportable(apartments, settings);
   if (!settings.newDevelopmentId) {
-    warnings.push("Для Авито не задан NewDevelopmentId. Без него кабинет новостроек объявления не примет — номер берётся в поддержке Авито.");
+    warnings.push("Это фид аренды. NewDevelopmentId для сдачи на долгий срок не нужен.");
   }
   if (!digitsPhone(settings.phone).startsWith("7")) {
     warnings.push("Телефон для фида должен быть российским, начиная с 7.");

@@ -32,8 +32,8 @@ async function sendLead(payload: {
   const id = `L-${Date.now().toString().slice(-4)}`;
   const note =
     payload.type === "booking" && payload.apartmentId
-      ? `Квартира ${payload.apartmentId} отмечена для брони. На этой ссылке заявка сохраняется в вашем браузере, офис увидит её в локальной версии.`
-      : "Заявка записана в этом браузере. Перезвоним, если открыта офисная версия.";
+      ? `Квартиру ${payload.apartmentId} отметили для просмотра. На этой ссылке заявка остаётся в вашем браузере.`
+      : "Заявка записана в этом браузере. Офис увидит её в локальной версии сайта.";
   const prev = JSON.parse(localStorage.getItem("liniya.leads") || "[]");
   localStorage.setItem("liniya.leads", JSON.stringify([{ id, ...payload, at: new Date().toISOString() }, ...prev].slice(0, 20)));
   return { ok: true as const, id, note };
@@ -55,11 +55,10 @@ export function BookingForm({
 
   const types = (
     [
-      { id: "booking", label: "Бронь на 5 дней" },
-      { id: "viewing", label: "Просмотр" },
-      { id: "mortgage", label: "Посчитать ипотеку" },
-      { id: "consult", label: "Просто поговорить" },
-      { id: "waitlist", label: "Лист ожидания" },
+      { id: "viewing", label: "Посмотреть квартиру" },
+      { id: "booking", label: "Удержать на 3 дня" },
+      { id: "consult", label: "Задать вопрос" },
+      { id: "waitlist", label: "Написать, когда освободится" },
     ] as { id: LeadType; label: string }[]
   ).filter((item) => status !== "sold" || item.id !== "booking");
 
@@ -120,7 +119,7 @@ export function BookingForm({
       )}
       <label className="field">
         <span>Что нужно</span>
-        <select name="type" defaultValue={status === "sold" ? "waitlist" : apartmentId ? "booking" : "consult"}>
+        <select name="type" defaultValue={status === "sold" ? "waitlist" : "viewing"}>
           {types.map((item) => (
             <option key={item.id} value={item.id}>{item.label}</option>
           ))}
@@ -136,11 +135,11 @@ export function BookingForm({
       </label>
       <label className="field">
         <span>Комментарий</span>
-        <textarea name="message" maxLength={1000} placeholder="Ипотека, дети, срок въезда" />
+        <textarea name="message" maxLength={1000} placeholder="Когда заехать, сколько человек, есть ли питомец" />
       </label>
       {error && <p className="form-error">{error}</p>}
       <button className="btn" type="submit" disabled={pending}>{pending ? "Записываем" : "Отправить заявку"}</button>
-      <p className="muted">Бронь — 100 000 ₽ на 5 рабочих дней, цена фиксируется. Если договор не подписываем, депозит возвращаем.</p>
+      <p className="muted">Просмотр бесплатный. Свободную квартиру держим 3 дня. Залог при договоре — один месяц аренды.</p>
     </form>
   );
 }

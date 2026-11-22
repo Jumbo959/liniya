@@ -4,6 +4,10 @@ export function formatPrice(value: number) {
   return new Intl.NumberFormat("ru-RU").format(Math.round(value)) + "\u00a0₽";
 }
 
+export function formatRent(value: number) {
+  return formatPrice(value) + "/мес";
+}
+
 export function formatMillions(value: number) {
   const n = value / 1_000_000;
   return (
@@ -59,17 +63,17 @@ export function roomsLong(rooms: number) {
 }
 
 export function statusLabel(status: ApartmentStatus) {
-  if (status === "available") return "в продаже";
-  if (status === "reserved") return "бронь";
-  return "продана";
+  if (status === "available") return "свободна";
+  if (status === "reserved") return "на просмотре";
+  return "занята";
 }
 
 export function leadTypeLabel(type: LeadType) {
   const map: Record<LeadType, string> = {
-    booking: "Бронь",
+    booking: "Удержать квартиру",
     viewing: "Просмотр",
-    consult: "Консультация",
-    mortgage: "Ипотека",
+    consult: "Вопрос",
+    mortgage: "Условия",
     waitlist: "Лист ожидания",
   };
   return map[type];
@@ -80,8 +84,8 @@ export function leadStatusLabel(status: LeadStatus) {
     new: "новая",
     call: "созвон",
     meeting: "встреча",
-    reserved: "бронь",
-    won: "сделка",
+    reserved: "удержали",
+    won: "заехали",
     lost: "отказ",
   };
   return map[status];

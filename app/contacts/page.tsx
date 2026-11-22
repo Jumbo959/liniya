@@ -11,12 +11,12 @@ export default function ContactsPage() {
 
   return (
     <section className="wrap page-hero">
-      <p className="kicker">офис</p>
-      <h1>Приезжайте смотреть кирпич, не рендер.</h1>
+      <p className="kicker">контакты</p>
+      <h1>Напишите или приезжайте смотреть.</h1>
       <div className="contact-grid" style={{ marginTop: 28 }}>
         <div>
           <p>{settings.city}, {settings.district}, {settings.address}</p>
-          <p>Ежедневно 10:00–20:00. {settings.salesName} встречает в шоуруме на втором этаже.</p>
+          <p>Ежедневно 10:00–20:00. {settings.salesName} показывает квартиры на втором этаже.</p>
           <p><a href={`tel:${settings.phone}`}>{settings.phoneDisplay}</a></p>
           <p><a href={`mailto:${settings.email}`}>{settings.email}</a></p>
           <p className="muted">12 минут пешком до метро «Тульская». Машину оставляйте на гостевых местах у переулка, во двор не заезжаем.</p>

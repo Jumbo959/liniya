@@ -19,9 +19,9 @@ export default function AdminHome() {
       <p className="kicker">сегодня</p>
       <h1 style={{ fontSize: 64, marginBottom: 18 }}>Обзор</h1>
       <div className="stats">
-        <div className="stat"><span className="muted">В продаже</span><b>{available.length}</b></div>
+        <div className="stat"><span className="muted">Свободно</span><b>{available.length}</b></div>
         <div className="stat"><span className="muted">Бронь</span><b>{reserved.length}</b></div>
-        <div className="stat"><span className="muted">Продано</span><b>{sold.length}</b></div>
+        <div className="stat"><span className="muted">Занято</span><b>{sold.length}</b></div>
         <div className="stat"><span className="muted">Сумма свободных</span><b>{formatPrice(sum)}</b></div>
       </div>
       <div className="mix" aria-hidden="true">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { formatArea, formatPrice, roomsShort } from "@/lib/format";
+import { formatArea, formatRent, roomsShort } from "@/lib/format";
 import type { PublicApartment } from "@/lib/types";
 
 export function Facade({ apartments }: { apartments: PublicApartment[] }) {
@@ -18,7 +18,7 @@ export function Facade({ apartments }: { apartments: PublicApartment[] }) {
   const height = top + floors.length * floorH + lobby + 70;
 
   const caption = hover
-    ? `${hover.id} · ${roomsShort(hover.rooms)} · ${formatArea(hover.area)} · ${hover.status === "sold" ? "продана" : formatPrice(hover.price)}`
+    ? `${hover.id} · ${roomsShort(hover.rooms)} · ${formatArea(hover.area)} · ${hover.status === "sold" ? "занята" : formatRent(hover.price)}`
     : "Наведите на окно — это конкретная квартира";
 
   return (

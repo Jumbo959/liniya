@@ -244,52 +244,113 @@ export function buildBlocks(rooms: PlanRoom[], windowSides: WindowSide[], ceilin
     }
   });
 
-  rooms.forEach((room, index) => {
-    if (room.kind === "bedroom" && room.w > 2.2 && room.d > 2.4) {
-      blocks.push({
-        cx: room.x + room.w / 2,
-        cy: 0.32,
-        cz: room.y + Math.min(1.35, room.d * 0.38),
-        sx: Math.min(1.7, room.w - 0.5),
-        sy: 0.38,
-        sz: Math.min(2.05, room.d - 0.8),
-        color: "#efe8dc",
-        opacity: 1,
-        room: index,
-        kind: "furniture",
-      });
-    }
-    if ((room.kind === "living" || room.kind === "kitchen") && room.w > 2 && room.d > 2) {
-      blocks.push({
-        cx: room.x + room.w / 2,
-        cy: 0.55,
-        cz: room.y + room.d - 0.42,
-        sx: Math.max(0.8, room.w - 0.5),
-        sy: 0.86,
-        sz: 0.55,
-        color: room.kind === "kitchen" ? "#f4f1ea" : "#8d9a90",
-        opacity: 1,
-        room: index,
-        kind: "furniture",
-      });
-    }
-    if (room.kind === "living" && room.w > 3) {
-      blocks.push({
-        cx: room.x + Math.min(1.3, room.w * 0.3),
-        cy: 0.38,
-        cz: room.y + room.d * 0.45,
-        sx: 0.9,
-        sy: 0.48,
-        sz: Math.min(2.1, room.d * 0.42),
-        color: "#6e7680",
-        opacity: 1,
-        room: index,
-        kind: "furniture",
-      });
-    }
-  });
+  rooms.forEach((room, index) => furnish(blocks, room, index));
 
   return blocks;
+}
+
+function piece(
+  blocks: Block[],
+  room: number,
+  x: number,
+  z: number,
+  sx: number,
+  sy: number,
+  sz: number,
+  color: string,
+) {
+  if (sx < 0.18 || sz < 0.18 || sy < 0.04) return;
+  blocks.push({
+    cx: x,
+    cy: 0.1 + sy / 2,
+    cz: z,
+    sx,
+    sy,
+    sz,
+    color,
+    opacity: 1,
+    room,
+    kind: "furniture",
+  });
+}
+
+function furnish(blocks: Block[], room: PlanRoom, index: number) {
+  const { x, y, w, d, kind, name } = room;
+  if (kind === "balcony" || w < 1.15 || d < 0.85) return;
+  const cloth = "#f4f1ea";
+  const wood = "#c4a484";
+  const dark = "#3d4650";
+  const green = "#7f8f86";
+
+  if (kind === "bedroom" && /кабинет/i.test(name)) {
+    piece(blocks, index, x + w / 2, y + 0.42, Math.min(1.4, w - 0.4), 0.74, 0.62, wood);
+    piece(blocks, index, x + w / 2, y + 1.15, 0.48, 0.46, 0.48, dark);
+    piece(blocks, index, x + 0.28, y + d / 2, 0.36, 1.7, Math.min(0.9, d - 0.4), "#efe8dc");
+    return;
+  }
+
+  if (kind === "bedroom" && w > 2.1 && d > 2.2) {
+    const bedW = Math.min(1.8, w - 0.7);
+    const bedD = Math.min(2.05, d - 0.95);
+    const bx = x + w / 2;
+    const bz = y + 0.28 + bedD / 2;
+    piece(blocks, index, bx, bz, bedW, 0.32, bedD, cloth);
+    piece(blocks, index, bx, y + 0.28, bedW, 0.55, 0.12, wood);
+    piece(blocks, index, bx - bedW * 0.18, bz - bedD * 0.32, 0.55, 0.12, 0.32, "#fff");
+    piece(blocks, index, bx + bedW * 0.18, bz - bedD * 0.32, 0.55, 0.12, 0.32, "#fff");
+    if (w > 2.6) {
+      piece(blocks, index, x + 0.38, bz, 0.42, 0.42, 0.42, wood);
+      piece(blocks, index, x + w - 0.38, bz, 0.42, 0.42, 0.42, wood);
+    }
+    piece(blocks, index, x + w - 0.34, y + d - 0.4, 0.5, 1.9, Math.min(1.1, d * 0.4), "#efe8dc");
+    return;
+  }
+
+  if (kind === "living") {
+    const sofaW = Math.min(2.2, w - 0.8);
+    piece(blocks, index, x + w / 2, y + d - 0.55, sofaW, 0.42, 0.85, green);
+    piece(blocks, index, x + w / 2, y + d - 0.95, 0.16, 0.55, 0.85, green);
+    piece(blocks, index, x + w / 2, y + d * 0.48, Math.min(1.1, w * 0.35), 0.32, 0.6, wood);
+    piece(blocks, index, x + 0.4, y + 0.85, 0.7, 0.42, 0.7, dark);
+    piece(blocks, index, x + 0.36, y + 0.32, Math.min(1.4, w * 0.4), 0.4, 0.38, "#ddd6ca");
+    if (/кухн/i.test(name) && w > 4) {
+      piece(blocks, index, x + w - 0.4, y + 0.4, 0.6, 0.9, Math.min(2.2, d - 0.6), cloth);
+      piece(blocks, index, x + w - 0.95, y + 1.5, 0.7, 0.74, 0.7, wood);
+    }
+    if (w > 4.5 && d > 4) {
+      piece(blocks, index, x + w * 0.72, y + d * 0.42, 1.3, 0.74, 0.8, wood);
+      piece(blocks, index, x + w * 0.72 - 0.35, y + d * 0.42 + 0.55, 0.4, 0.46, 0.4, dark);
+      piece(blocks, index, x + w * 0.72 + 0.35, y + d * 0.42 - 0.55, 0.4, 0.46, 0.4, dark);
+    }
+    return;
+  }
+
+  if (kind === "kitchen") {
+    piece(blocks, index, x + w / 2, y + 0.38, Math.max(0.8, w - 0.4), 0.9, 0.6, cloth);
+    piece(blocks, index, x + 0.4, y + d - 0.4, 0.62, 1.7, 0.62, "#d9d3c6");
+    if (w > 2.2 && d > 2) {
+      piece(blocks, index, x + w / 2, y + d * 0.62, Math.min(1.2, w - 0.8), 0.74, 0.75, wood);
+      piece(blocks, index, x + w / 2, y + d * 0.62 + 0.55, 0.38, 0.46, 0.38, dark);
+      piece(blocks, index, x + w / 2, y + d * 0.62 - 0.55, 0.38, 0.46, 0.38, dark);
+    }
+    return;
+  }
+
+  if (kind === "bath") {
+    if (w > 1.6 && d > 1.7) piece(blocks, index, x + 0.55, y + 0.45, 0.75, 0.55, 1.5, cloth);
+    piece(blocks, index, x + w - 0.4, y + d - 0.4, 0.55, 0.8, 0.45, cloth);
+    piece(blocks, index, x + w / 2, y + d - 0.35, 0.4, 0.42, 0.55, "#e7e4de");
+    return;
+  }
+
+  if (kind === "wardrobe") {
+    piece(blocks, index, x + w / 2, y + d / 2, Math.max(0.3, w - 0.2), 2.1, Math.max(0.3, d - 0.2), "#efe8dc");
+    return;
+  }
+
+  if (kind === "hall" && w > 1.3) {
+    piece(blocks, index, x + Math.min(0.7, w / 2), y + d / 2, Math.min(1.1, w - 0.3), 0.42, Math.min(0.4, d - 0.25), wood);
+  }
 }
 
 export function modelCenter(rooms: PlanRoom[]) {

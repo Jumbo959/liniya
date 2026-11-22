@@ -52,7 +52,7 @@ export function FeedDesk({
           <label className="field"><span>Дней брони, рабочие</span><input type="number" value={form.bookingDays} onChange={(e) => set("bookingDays", Number(e.target.value))} /></label>
         </div>
         <label className="check-row"><input type="checkbox" checked={form.exportReserved} onChange={(e) => set("exportReserved", e.target.checked)} /> Выгружать забронированные</label>
-        <label className="check-row"><input type="checkbox" checked={form.exportSold} onChange={(e) => set("exportSold", e.target.checked)} /> Выгружать проданные</label>
+        <label className="check-row"><input type="checkbox" checked={form.exportSold} onChange={(e) => set("exportSold", e.target.checked)} /> Выгружать занятые</label>
         <button className="btn" type="submit">Сохранить настройки</button>
         {note && <p>{note}</p>}
       </form>

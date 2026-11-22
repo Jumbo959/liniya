@@ -7,7 +7,7 @@ export default function LoginPage() {
   return (
     <div className="login">
       <div className="login-card">
-        <p className="kicker">офис продаж</p>
+        <p className="kicker">офис</p>
         <h1>Вход</h1>
         <LoginForm />
         <p className="muted">Демонстрационный контур. Пароль для просмотра панели — {adminPassword()}.</p>

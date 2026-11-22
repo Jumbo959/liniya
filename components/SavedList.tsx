@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FloorPlan } from "./FloorPlan";
 import { StatusMark } from "./StatusMark";
-import { formatArea, formatPrice, roomsLong } from "@/lib/format";
+import { formatArea, formatRent, roomsLong } from "@/lib/format";
 import type { PublicApartment } from "@/lib/types";
 import { usePrefs } from "./Prefs";
 
@@ -27,9 +27,8 @@ export function SavedList({ apartments, mode }: { apartments: PublicApartment[];
       { label: "Комнаты", value: (item) => roomsLong(item.rooms) },
       { label: "Площадь", value: (item) => formatArea(item.area) },
       { label: "Этаж", value: (item) => String(item.floor) },
-      { label: "Цена", value: (item) => (item.status === "sold" ? "продана" : formatPrice(item.price)) },
-      { label: "₽/м²", value: (item) => (item.status === "sold" ? "—" : formatPrice(Math.round(item.price / item.area))) },
-      { label: "Отделка", value: (item) => item.finishing },
+      { label: "В месяц", value: (item) => (item.status === "sold" ? "занята" : formatRent(item.price)) },
+      { label: "Мебель", value: () => "есть" },
       { label: "Вид", value: (item) => item.view },
       { label: "Потолок", value: (item) => `${item.ceiling} м` },
       { label: "Статус", value: (item) => item.status },
@@ -83,7 +82,7 @@ export function SavedList({ apartments, mode }: { apartments: PublicApartment[];
             <div className="lot-meta">
               <div className="lot-top"><span>№ {item.id}</span><StatusMark status={item.status} /></div>
               <h3>{roomsLong(item.rooms)}</h3>
-              <p className="price"><b>{item.status === "sold" ? "Продана" : formatPrice(item.price)}</b></p>
+              <p className="price"><b>{item.status === "sold" ? "Занята" : formatRent(item.price)}</b></p>
               <button className="btn-ghost small" type="button" onClick={() => toggleFav(item.id)}>убрать</button>
             </div>
           </article>

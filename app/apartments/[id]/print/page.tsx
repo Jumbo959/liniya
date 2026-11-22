@@ -1,6 +1,6 @@
 import { FloorPlan } from "@/components/FloorPlan";
 import { roomArea } from "@/lib/areas";
-import { formatArea, formatPrice, roomsLong } from "@/lib/format";
+import { formatArea, formatRent, roomsLong } from "@/lib/format";
 import { getApartment, getPublicApartments } from "@/lib/store";
 import { notFound } from "next/navigation";
 
@@ -21,7 +21,7 @@ export default async function PrintPage({ params }: { params: Promise<{ id: stri
       </div>
       <aside>
         <p>{roomsLong(apartment.rooms)} · {formatArea(apartment.area)} · {apartment.floor} этаж</p>
-        <p className="price-lg">{apartment.status === "sold" ? "Продана" : formatPrice(apartment.price)}</p>
+        <p className="price-lg">{apartment.status === "sold" ? "Занята" : formatRent(apartment.price)}</p>
         <p>{apartment.view} · {apartment.finishing} · потолок {apartment.ceiling} м</p>
         <p>{apartment.blurb}</p>
         <table>
